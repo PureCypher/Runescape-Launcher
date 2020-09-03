@@ -45,7 +45,7 @@ class Application(tk.Frame):
                 print(f'Please input a number not {str(accountAmount)}')
             else:
                 for mainLoop in range(amount):
-                    os.system('runescape-launcher') # This should launch runescape launcher on Debian distros, Using the Download guide of Runescape.com/download
+                    subprocess.Popen('runescape-launcher') # This should launch runescape launcher on Debian distros, Using the Download guide of Runescape.com/download
                     sleep(30)
                     for client in range(int(amount /15)):
                         user = os.uname()
