@@ -6,6 +6,7 @@ import os
 from time import sleep
 import subprocess
 import sqlite3
+import webbrowser
 from cryptography.fernet import Fernet
 import os
 
@@ -33,7 +34,6 @@ class Application(tk.Frame):
         Launch.grid(row=1, column=1, pady=20, sticky="n")                         
         EnLaunch = ttk.Entry(tab1)                                                 
         EnLaunch.grid(row=1, column=2, pady=20, padx=5, sticky="w")      
-        
 
         def sleepy_time():
             sleep(slider.get())
@@ -48,15 +48,14 @@ class Application(tk.Frame):
                 print(f'Launching {amount} Runescape clients')
                 for mainLoop in range(int(amount)):
                     os.startfile("rs-launch://www.runescape.com/k=5/l=$(Language:0)/jav_config.ws")
-                    #sleep(5)
+                    sleep(2)
                     for client in range(int(amount /15)):
                         # specify your cmd command
                         try:
                             cmdCommand = "C:\\Program Files\\LockHunter\\Lockhunter.exe -d -sm -x C:\\ProgramData\\Jagex\\launcher\\instance.lock"
                             subprocess.Popen(cmdCommand.split(), stdout=subprocess.PIPE)
-                        except:
-                            pathfind = "C:\\ProgramData\\Jagex\\launcher\\instance.lock"
-                            os.remove(pathfind)
+                        except Exception as e:
+                            print(e)
 
         def LinuxOS_Launcher(accountAmount):
             try:
@@ -92,7 +91,7 @@ class Application(tk.Frame):
                 LinuxOS_Launcher(amount)
             elif platform == "darwin":
                 MacOs_Launcher(amount)
-            elif platform == "win32":
+            elif platform == "win32":               
                 WindowOS_Launcher(amount)
 
         slider = tk.Scale(tab1, orient="horizontal", from_=0, to=60) 
