@@ -6,7 +6,6 @@ import os
 from time import sleep
 import subprocess
 import sqlite3
-import webbrowser
 from cryptography.fernet import Fernet
 import os
 
@@ -46,16 +45,20 @@ class Application(tk.Frame):
                 showerror(title='Erro', message=f'Please input a number not {str(accountAmount)}')
             else:
                 print(f'Launching {amount} Runescape clients')
+                clients = int(amount / 15)
                 for mainLoop in range(int(amount)):
                     os.startfile("rs-launch://www.runescape.com/k=5/l=$(Language:0)/jav_config.ws")
-                    sleep(2)
-                    for client in range(int(amount /15)):
-                        # specify your cmd command
-                        try:
-                            cmdCommand = "C:\\Program Files\\LockHunter\\Lockhunter.exe -d -sm -x C:\\ProgramData\\Jagex\\launcher\\instance.lock"
-                            subprocess.Popen(cmdCommand.split(), stdout=subprocess.PIPE)
-                        except Exception as e:
-                            print(e)
+                    sleep(5)
+                    if mainLoop == 16:
+                        if clients != 0:
+                            # specify your cmd command
+                            try:
+                                cmdCommand = "C:\\Program Files\\LockHunter\\Lockhunter.exe -d -sm -x C:\\ProgramData\\Jagex\\launcher\\instance.lock"
+                                subprocess.Popen(cmdCommand.split(), stdout=subprocess.PIPE)
+                                sleep(10)
+                                amount -= 1
+                            except Exception as e:
+                                print(e)
 
         def LinuxOS_Launcher(accountAmount):
             try:
