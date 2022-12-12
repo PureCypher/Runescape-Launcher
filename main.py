@@ -1,3 +1,16 @@
+#    Copyright 2022 Runescape-Launcher contributors
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
 import tkinter as tk
 from tkinter.messagebox import showerror
 from tkinter import ttk
@@ -7,7 +20,6 @@ from time import sleep
 import subprocess
 import sqlite3
 from cryptography.fernet import Fernet
-import os
 
 class Application(tk.Frame):   
     def __init__(self, master):
@@ -60,21 +72,21 @@ class Application(tk.Frame):
                             except Exception as e:
                                 print(e)
 
-        def LinuxOS_Launcher(accountAmount):
+        def linux_os_launcher(accountAmount):
             try:
                 amount = int(accountAmount)
             except ValueError:
                 print(f'Please input a number not {str(accountAmount)}')
             else:
                 for mainLoop in range(amount):
-                    subprocess.Popen('runescape-launcher') # This should launch runescape launcher on Debian distros, Using the Download guide of Runescape.com/download
+                    subprocess.Popen('runescape-launcher') # This should launch runescape launcher on Debian distros, Using the Download guide of runescape.com/download
                     sleep(5)
                     for client in range(int(amount /15)):
                         user = os.uname()
                         pathfind = "/home/" + str(user[1]).lower() + "/Jagex/launcher/instance.lock"
                         os.remove(pathfind)
 
-        def MacOs_Launcher(accountAmount):
+        def mac_os_launcher(accountAmount):
             try:
                 amount = int(accountAmount)
             except ValueError:
@@ -88,37 +100,37 @@ class Application(tk.Frame):
                         pathfind = "/User/" + str(user[1]).lower() + "/Jagex/launcher/instance.lock"
                         os.remove(pathfind)
 
-        def Runescape():
+        def runescape():
             amount = EnLaunch.get()
             if platform == "linux":
-                LinuxOS_Launcher(amount)
+                linux_os_launcher(amount)
             elif platform == "darwin":
-                MacOs_Launcher(amount)
+                mac_os_launcher(amount)
             elif platform == "win32":               
                 WindowOS_Launcher(amount)
 
         slider = tk.Scale(tab1, orient="horizontal", from_=0, to=60) 
         slider.grid(row=2, column=1)
 
-        launch = tk.Button(tab1, text="Launch", command=Runescape)
+        launch = tk.Button(tab1, text="Launch", command=runescape)
         launch.grid(row=2, column=2, pady=10, ipadx=20, sticky="n")
 
         quit = tk.Button(tab1, text="Cancel", command=self.master.quit)
         quit.grid(row=3, column=2, pady=10, ipadx=20, sticky="n")
 
-        '''
-        Account Storage tab
-        '''
         def load_key():
+            '''
+            Account Storage tab
+            '''
             username = os.getenv('username')
             if os.path.exists(f"C:\\Users\\{username}\\AppData\\Local\\secret.key"):
                 file = open(f"C:\\Users\\{username}\\AppData\\Local\\secret.key", "rb")
                 
                 return file.read()
             else:
-                New_key()
+                new_key()
 
-        def New_key():
+        def new_key():
             """
             Generates a key and save it into a file
             """
@@ -128,37 +140,37 @@ class Application(tk.Frame):
                 key_file.write(key)
             load_key()
 
-        '''Encrypt'''
-        def Encrypt(message):
+        def encrypt(message):
+            '''encrypt'''
             message = str.encode(message)
             key = load_key()
             e = Fernet(key)
             enCrypt = e.encrypt(message)
             return enCrypt
 
-        '''Decrypt'''
-        def Decrypt(message):
+        def decrypt(message):
+            '''decrypt'''
             key = load_key()
             f = Fernet(key)
             DeCrypted = f.decrypt(message)
             return DeCrypted
 
-        '''
-        Show Account database
-        '''
         
-        def AddAcc(email, password):
+        def add_acc(email, password):
+            '''
+            Show Account database
+            '''
             if email and password:
                 username = os.getenv('username')
                 conn = sqlite3.connect(f"C:\\Users\\{username}\\AppData\\Roaming\\important.db")
                 c = conn.cursor()
                 
-                c.execute("INSERT INTO account (email, password) VALUES (?, ?)", (Encrypt(email), Encrypt(password)))
+                c.execute("INSERT INTO account (email, password) VALUES (?, ?)", (encrypt(email), encrypt(password)))
                 conn.commit()
             else:
                 showerror(title='Error', message='Please put something in both input fields')
 
-        def SqlData():
+        def sql_data():
             username = os.getenv('username')
             if os.path.exists(f"C:\\Users\\{username}\\AppData\\Roaming\\important.db"):
                 conn = sqlite3.connect(f"C:\\Users\\{username}\\AppData\\Roaming\\important.db")
@@ -183,7 +195,7 @@ class Application(tk.Frame):
 
                 PassHeader = tk.Label(tab2, text='Password :')
                 PassHeader.grid(column=1, row=2, ipadx=20, padx=20)
-                passEr = lambda: AddAcc(EmailInput.get(), PassInput.get())
+                passEr = lambda: add_acc(EmailInput.get(), PassInput.get())
                 Input = ttk.Button(tab2, text='Add account', command=passEr)
                 Input.grid(row=0, column=2, sticky='w')
                 
@@ -199,7 +211,7 @@ class Application(tk.Frame):
                 
                 for email in emailResult:
                     email = email[0]
-                    Wmail = tk.Label(canvas, text=Decrypt(email))
+                    Wmail = tk.Label(canvas, text=decrypt(email))
                     Wmail.grid(column=0, row=x, padx=20)
                     x += 1
                 
@@ -207,7 +219,7 @@ class Application(tk.Frame):
                 
                 for passw in passResult:
                     passw = passw[0]
-                    Passw = tk.Label(canvas, text=Decrypt(passw))
+                    Passw = tk.Label(canvas, text=decrypt(passw))
                     Passw.grid(column=1, row=y, padx=20)
                     y += 1
                 
@@ -217,9 +229,9 @@ class Application(tk.Frame):
                 c.execute('''CREATE TABLE account (email text, password text)''')
                 conn.commit()
                 conn.close()
-                SqlData()
+                sql_data()
 
-        SqlData()
+        sql_data()
         
 root = tk.Tk()
 app = Application(master=root)
